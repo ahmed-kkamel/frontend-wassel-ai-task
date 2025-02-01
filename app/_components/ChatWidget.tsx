@@ -29,7 +29,7 @@ export default function ChatWidget() {
         if (messages.length === 0) {
             setMessages([{ text: t("chat.welcome"), user: false }]);
         }
-    }, [i18n.language]);
+    }, [i18n.language, messages.length, t]);
 
     useEffect(() => {
         if (transcript) {

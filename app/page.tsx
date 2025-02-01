@@ -10,7 +10,6 @@ export default function MainPage() {
     <div className="relative w-screen h-screen bg-gradient-to-br from-blue-600 to-purple-800 flex flex-col items-center justify-center text-white text-center p-6">
       <h1 className="text-3xl font-bold mb-4">{t("project.title")}</h1>
       <p className="text-lg max-w-xl">{t("project.description")}</p>
-
       <LanguageButton />
       <ChatWidget />
     </div>
