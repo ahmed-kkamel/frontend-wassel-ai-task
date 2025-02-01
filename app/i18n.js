@@ -5,7 +5,7 @@ const resources = {
   en: {
     translation: {
       project: {
-        title: "Welcome to Our Project",
+        title: "Welcome",
         description:
           "This project demonstrates a chatbot with multilingual support.",
       },
@@ -45,7 +45,7 @@ const resources = {
   ar: {
     translation: {
       project: {
-        title: "مرحبًا في مشروعنا",
+        title: "مرحبًا بكم",
         description: "يُظهر هذا المشروع روبوت دردشة بدعم متعدد اللغات.",
       },
       chat: {
