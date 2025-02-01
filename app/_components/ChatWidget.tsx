@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
-import { MessageCircle, X, Mic, Send } from "lucide-react";
+import { X, Mic, Send } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import "regenerator-runtime/runtime";
 import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+import ChatButton from "./ChatButton";
+import { Message } from "../_types/chatWedgitTypes";
 
-interface Message {
-    text: string;
-    user: boolean;
-}
+const CHAT_HISTORY_KEY = "chat_history";
 
 export default function ChatWidget() {
     const { t, i18n } = useTranslation();
@@ -16,28 +15,34 @@ export default function ChatWidget() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [showOptions, setShowOptions] = useState(false);
+
     const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
-    const messageOptions = [
+    const messageOptions = useMemo(() => [
         t("chat.options.services"),
         t("chat.options.contact"),
         t("chat.options.pricing"),
         t("chat.options.guidance"),
-    ];
+    ], [t]);
 
     useEffect(() => {
-        if (messages.length === 0) {
+        const savedMessages = localStorage.getItem(CHAT_HISTORY_KEY);
+        if (savedMessages) {
+            setMessages(JSON.parse(savedMessages));
+        } else {
             setMessages([{ text: t("chat.welcome"), user: false }]);
         }
-    }, [i18n.language, messages.length, t]);
+    }, [t]);
 
     useEffect(() => {
-        if (transcript) {
-            setInput(transcript);
-        }
+        localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
+    }, [messages]);
+
+    useEffect(() => {
+        if (transcript) setInput(transcript);
     }, [transcript]);
 
-    const sendMessage = (message?: string) => {
+    const sendMessage = useCallback((message?: string) => {
         const userMessage = message || input.trim();
         if (!userMessage) return;
 
@@ -68,36 +73,29 @@ export default function ChatWidget() {
                 setMessages((prev) => [...prev, { text: t("chat.responses.assistance"), user: false }]);
             }, 1000);
         }, 1000);
-    };
+    }, [input, showOptions, t]);
 
-    const startListening = () => {
+    const startListening = useCallback(() => {
         if (browserSupportsSpeechRecognition) {
             resetTranscript();
             SpeechRecognition.startListening({ continuous: true, language: i18n.language });
         }
-    };
+    }, [browserSupportsSpeechRecognition, i18n.language, resetTranscript]);
 
-    const stopListening = () => {
+    const stopListening = useCallback(() => {
         SpeechRecognition.stopListening();
         setInput(transcript);
-    };
+    }, [transcript]);
 
     return (
         <>
-            <motion.button
-                onClick={() => setIsOpen(!isOpen)}
-                className={`fixed bottom-6 end-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-full shadow-xl hover:scale-110 transition-all`}
-                whileTap={{ scale: 0.9 }}
-            >
-                <MessageCircle size={28} />
-            </motion.button>
-
+            <ChatButton isOpen={isOpen} setIsOpen={setIsOpen} />
             {isOpen && (
                 <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    className={`fixed bottom-20 md:bottom-24 md:end-6 w-96 h-[500px] bg-white shadow-2xl rounded-lg flex flex-col overflow-hidden`}
+                    className="fixed bottom-20 md:bottom-24 md:end-6 w-96 h-[500px] bg-white shadow-2xl rounded-lg flex flex-col overflow-hidden"
                 >
                     <div className="p-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold flex justify-between items-center">
                         <span>{t("chat.title")}</span>
@@ -134,7 +132,7 @@ export default function ChatWidget() {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder={t("chat.placeholder")}
-                            className="flex-1 p-3 border rounded-l-lg focus:ring-2 focus:ring-blue-500 text-gray-800"
+                            className="flex-1 p-3 border rounded-l-lg text-gray-800 focus:outline-none"
                             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                         />
                         <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-r-lg" onClick={() => sendMessage()}>

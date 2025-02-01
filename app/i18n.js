@@ -34,6 +34,12 @@ const resources = {
         placeholder: "Type a message...",
         send: "Send",
       },
+      notFound: {
+        title: "Oops! Page Not Found",
+        description:
+          "The page you're looking for doesn't exist or has been moved. Let's get you back on track!",
+        backToHome: "Back to Home",
+      },
     },
   },
   ar: {
@@ -66,6 +72,12 @@ const resources = {
         placeholder: "اكتب رسالة...",
         send: "إرسال",
       },
+    },
+    notFound: {
+      title: "عذرًا! الصفحة غير موجودة",
+      description:
+        "الصفحة التي تبحث عنها غير موجودة أو تم نقلها. دعنا نعيدك إلى المسار الصحيح!",
+      backToHome: "العودة إلى الصفحة الرئيسية",
     },
   },
 };
