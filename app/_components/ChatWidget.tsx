@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { X, Mic, Send } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -16,7 +17,7 @@ export default function ChatWidget() {
     const [input, setInput] = useState("");
     const [showOptions, setShowOptions] = useState(false);
 
-    const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+    // const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
     const messageOptions = useMemo(() => [
         t("chat.options.services"),
@@ -38,9 +39,9 @@ export default function ChatWidget() {
         localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
     }, [messages]);
 
-    useEffect(() => {
-        if (transcript) setInput(transcript);
-    }, [transcript]);
+    // useEffect(() => {
+    //     if (transcript) setInput(transcript);
+    // }, [transcript]);
 
     const sendMessage = useCallback((message?: string) => {
         const userMessage = message || input.trim();
@@ -75,17 +76,17 @@ export default function ChatWidget() {
         }, 1000);
     }, [input, showOptions, t]);
 
-    const startListening = useCallback(() => {
-        if (browserSupportsSpeechRecognition) {
-            resetTranscript();
-            SpeechRecognition.startListening({ continuous: true, language: i18n.language });
-        }
-    }, [browserSupportsSpeechRecognition, i18n.language, resetTranscript]);
+    // const startListening = useCallback(() => {
+    //     if (browserSupportsSpeechRecognition) {
+    //         resetTranscript();
+    //         SpeechRecognition.startListening({ continuous: true, language: i18n.language });
+    //     }
+    // }, [browserSupportsSpeechRecognition, i18n.language, resetTranscript]);
 
-    const stopListening = useCallback(() => {
-        SpeechRecognition.stopListening();
-        setInput(transcript);
-    }, [transcript]);
+    // const stopListening = useCallback(() => {
+    //     SpeechRecognition.stopListening();
+    //     setInput(transcript);
+    // }, [transcript]);
 
     return (
         <>
@@ -95,15 +96,23 @@ export default function ChatWidget() {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    className="fixed bottom-20 md:bottom-24 md:end-6 w-96 h-[500px] bg-white shadow-2xl rounded-lg flex flex-col overflow-hidden"
+                    className="fixed bottom-20 md:bottom-24 md:end-6 w-96 h-[550px] rounded-xl flex flex-col overflow-hidden outline outline-[#FFFFFF]"
                 >
-                    <div className="p-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold flex justify-between items-center">
-                        <span>{t("chat.title")}</span>
-                        <button onClick={() => setIsOpen(false)} className="text-white hover:text-gray-300">
-                            <X size={24} />
-                        </button>
+                    {/* chat header */}
+                    <div className="bg-gradient-to-r from-[#0C4A4D] to-[#083032] relative">
+                        <div className="bg-[url(/header-background.png)] bg-no-repeat bg-left bg-contain flex flex-col gap-2 items-center">
+                            <Image src="/chat-icon.svg" alt="chat icon" width={66} height={66} className="outline outline-white rounded-full mt-3" />
+                            <Image src="/header-icon.svg" alt="chat icon" width={24} height={24} className=" absolute end-[154px] bottom-10" />
+                            <p className="font-semibold text-base mb-3">Welcome to GIVA</p>
+                        </div>
+                        <div className="flex gap-1 absolute start-[135px] bottom-[-12px]">
+                            <button className="text-[#083032] text-[8px] bg-white border border-[#F5F5F5] rounded-full px-2 py-1">En</button>
+                            <button className="text-[8px] bg-white border border-[#F5F5F5] rounded-full px-2 py-1"><Image src="/refresh.svg" alt="chat icon" width={9} height={9} /></button>
+                            <button className="text-[8px] bg-white border border-[#F5F5F5] rounded-full px-2 py-1"><Image src="/close.svg" alt="chat icon" width={9} height={9} /></button>
+                            <button className="text-[8px] bg-white border border-[#F5F5F5] rounded-full px-2 py-1"><Image src="/star.svg" alt="chat icon" width={9} height={9} /></button>
+                        </div>
                     </div>
-                    <div className="flex-1 p-4 overflow-auto bg-gray-50">
+                    <div className="flex-1 p-4 overflow-auto bg-[#EFF1F1]">
                         {messages.map((msg, index) => (
                             <div key={index} className={`p-2 my-1 rounded-lg ${msg.user ? "bg-blue-500 text-white ml-auto" : "bg-gray-200 text-gray-800 mr-auto"} max-w-[80%]`}>
                                 {msg.text}
@@ -126,20 +135,18 @@ export default function ChatWidget() {
                             </div>
                         )}
                     </div>
-                    <div className="p-3 border-t flex bg-white">
+                    {/* chat input */}
+                    <div className="p-3 flex items-center bg-[#EFF1F1] relative">
                         <input
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder={t("chat.placeholder")}
-                            className="flex-1 p-3 border rounded-l-lg text-gray-800 focus:outline-none"
+                            className="flex-1 p-3 border-[.5px] border-[#E4E7E7] focus:outline-none bg-[#FFFFFF] rounded-2xl text-[#A0A0A0] placeholder:text-[#A0A0A0]"
                             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                         />
-                        <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-r-lg" onClick={() => sendMessage()}>
-                            <Send size={20} />
-                        </button>
-                        <button onClick={listening ? stopListening : startListening} className="ml-2 p-3 bg-blue-500 text-white rounded-full">
-                            {listening ? "Stop" : <Mic size={24} />}
+                        <button className="absolute end-7 " onClick={() => sendMessage()}>
+                            <Image src="/send.svg" alt="chat icon" width={24} height={24} />
                         </button>
                     </div>
                 </motion.div>
