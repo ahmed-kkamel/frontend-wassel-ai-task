@@ -16,10 +16,10 @@ export default function ChatWidget() {
     const [showSecondryOptions, setShowSecondryOptions] = useState(false);
     const [showFeedback, setShowFeedback] = useState(false);
     const [showAssistanceForm, setShowAssistanceForm] = useState(false);
+    const [rating, setRating] = useState(0);
+    const [hoveredRating, setHoveredRating] = useState(0);
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const feedbackContainerRef = useRef<HTMLDivElement>(null);
-
-
 
     const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true })
     const isArabic = i18n.language === "ar";
@@ -144,7 +144,7 @@ export default function ChatWidget() {
                         </div>
                     </div>
                     {/* chat messages */}
-                    <div ref={chatContainerRef} className="flex-1 p-3 overflow-auto bg-[#EFF1F1] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300">
+                    <div ref={chatContainerRef} className="flex-1 p-3 overflow-auto bg-[#EFF1F1] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300">
                         {showAssistanceForm ? <>
                             <p className="text-[#3C3C3C] text-xs my-2 px-5">
                                 I&apos;m sorry, but I don&apos;t have the answer to that right now. However, I can connect you with our team for further assistance.
@@ -203,16 +203,23 @@ export default function ChatWidget() {
                                 <Image src="/close.svg" alt="close icon" width={12} height={12} onClick={() => setShowFeedback(false)} className="cursor-pointer self-end" />
                                 <p className="text-[#3C3C3C] text-base font-medium">Submit Your Feedback</p>
                                 <div className="flex justify-center gap-1">
-                                    {[...Array(5)].map((_, index) => (
-                                        <button key={index} className="bg-[#F4F4F4] rounded p-1">
-                                            <Image src="/star.svg" alt="chat icon" width={18} height={18} />
-                                        </button>
-                                    ))}
-
+                                    {[...Array(5)].map((_, index) => {
+                                        const starValue = index + 1;
+                                        return (
+                                            <button
+                                                key={index}
+                                                className={`rounded p-1 transition duration-200 ${starValue <= (hoveredRating || rating) ? "bg-yellow-400" : "bg-[#F4F4F4]"}`}
+                                                onClick={() => setRating(starValue)}
+                                                onMouseEnter={() => setHoveredRating(starValue)}
+                                                onMouseLeave={() => setHoveredRating(0)}
+                                            >
+                                                <Image src="/star.svg" alt="star icon" width={18} height={18} />
+                                            </button>
+                                        );
+                                    })}
                                 </div>
-                                <textarea className="w-full p-2 border border-[#F0F0F0] rounded-xl text-[#333333] focus:outline-none placeholder:text-[#333333] placeholder:text-xs" placeholder="Type here..."></textarea>
+                                <textarea className="w-full p-2 border border-[#F0F0F0] rounded-xl text-xs text-[#333333] focus:outline-none placeholder:text-[#333333] placeholder:text-xs" placeholder="Type here..."></textarea>
                                 <button className="bg-gradient-to-r from-[#0C4A4D] to-[#083032] p-2 rounded-lg">Submit</button>
-
                             </div>
                         )}
                     </div>
