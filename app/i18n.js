@@ -13,10 +13,11 @@ const resources = {
         title: "Chatbot",
         welcome: "Hello! Please type your message to start the conversation.",
         options: {
-          services: "What services do you offer?",
-          contact: "How can I contact support?",
-          pricing: "Tell me about pricing.",
-          guidance: "Can you guide me?",
+          services: "What is GAMI, and what are its key responsibilities?",
+          contact: "How can I partner with GAMI for industrial initiatives?",
+          pricing:
+            "What are the latest policies and regulations introduced by GAMI?",
+          guidance: "How to apply?",
         },
         responses: {
           services:
